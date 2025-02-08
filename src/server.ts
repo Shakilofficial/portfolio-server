@@ -9,7 +9,7 @@ const start = async (): Promise<void> => {
       console.log(`🚀 Server is running on port ${config.port} 🏃🏽‍♂️➡️`);
     });
   } catch (error) {
-    console.error('🚨 Failed to start the server ❌', error);
+    console.error('🚨 Failed to start the server ', error);
     process.exit(1);
   }
 };
