@@ -5,3 +5,5 @@ export interface IUser {
   name: string;
   profileImage?: string;
 }
+
+export type TUserRole = 'admin';
