@@ -1,6 +1,7 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
+import { StatusCodes } from 'http-status-codes';
 
 const app: Application = express();
 
@@ -11,7 +12,10 @@ app.use(express.json());
 
 // Health Check
 app.get('/', (req: Request, res: Response) => {
-  res.status(200).json({ success: true, message: 'Server is running ✅' });
+  res.status(StatusCodes.OK).json({
+    success: true,
+    message: '🌐 Server is live 🚀',
+  });
 });
 
 export default app;
