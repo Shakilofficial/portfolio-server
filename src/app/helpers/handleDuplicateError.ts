@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { TErrorResponse } from "../types/error";
+import { TErrorResponse } from '../types/error';
 
 // Function to handle duplicate error
 const handleDuplicateError = (err: any): TErrorResponse => {

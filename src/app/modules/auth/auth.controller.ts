@@ -30,4 +30,3 @@ const login = catchAsync(async (req, res) => {
 export const authControllers = {
   login,
 };
-
