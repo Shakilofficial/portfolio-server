@@ -13,6 +13,8 @@ router.post(
   blogControllers.createBlog,
 );
 
+router.get('/:id', blogControllers.getSingleBlog);
+
 router.patch(
   '/:id',
   auth('admin'),
@@ -20,9 +22,19 @@ router.patch(
   blogControllers.updateBlog,
 );
 
-router.delete('/:id', auth('admin'), blogControllers.deleteBlog);
+router.patch(
+  '/:id/featured',
+  auth('admin'),
+  blogControllers.toggleBlogFeatured,
+);
 
-router.get('/:id', blogControllers.getSingleBlog);
+router.patch(
+  '/:id/published',
+  auth('admin'),
+  blogControllers.toggleBlogPublished,
+);
+
+router.delete('/:id', auth('admin'), blogControllers.deleteBlog);
 
 router.get('/', blogControllers.getAllBlogs);
 

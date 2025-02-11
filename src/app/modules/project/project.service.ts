@@ -33,6 +33,22 @@ const updateProject = async (id: string, payload: Partial<IProject>) => {
   });
 };
 
+// Toggle project featured status
+const toggleProjectFeatured = async (id: string) => {
+  const project = await Project.findById(id);
+  if (!project) {
+    throw new Error('Project not found');
+  }
+  if (project.isDeleted) {
+    throw new Error('Project is deleted');
+  }
+
+  const result = Project.findByIdAndUpdate(id, {
+    isFeatured: !project.isFeatured,
+  });
+  return result;
+};
+
 const deleteProject = async (id: string) => {
   const project = await Project.findById(id);
   if (!project) {
@@ -67,6 +83,7 @@ export const projectServices = {
   createProject,
   getSingleProject,
   updateProject,
+  toggleProjectFeatured,
   deleteProject,
   getAllProjects,
 };

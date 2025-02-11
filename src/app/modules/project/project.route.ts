@@ -20,6 +20,12 @@ router.patch(
   projectControllers.updateProject,
 );
 
+router.patch(
+  '/:id/featured',
+  auth('admin'),
+  projectControllers.toggleProjectFeatured,
+);
+
 router.delete('/:id', auth('admin'), projectControllers.deleteProject);
 
 router.get('/:id', projectControllers.getSingleProject);

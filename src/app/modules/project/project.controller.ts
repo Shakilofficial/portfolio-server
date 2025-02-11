@@ -30,6 +30,19 @@ const updateProject = catchAsync(async (req, res) => {
   });
 });
 
+// toggle project featured status
+const toggleProjectFeatured = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const result = await projectServices.toggleProjectFeatured(id);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Project featured status toggled successfully',
+    data: result,
+  });
+});
+
 // Delete a project (soft delete)
 const deleteProject = catchAsync(async (req, res) => {
   const id = req.params.id;
@@ -72,6 +85,7 @@ export const projectControllers = {
   createProject,
   updateProject,
   deleteProject,
+  toggleProjectFeatured,
   getSingleProject,
   getAllProjects,
 };

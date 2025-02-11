@@ -49,6 +49,50 @@ const updateBlog = async (
   return result;
 };
 
+// toggle blog featured status
+const toggleBlogFeatured = async (id: string, userId: string) => {
+  const blog = await Blog.findById(id);
+
+  if (!blog) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
+  }
+
+  if (blog.author.toString() !== userId) {
+    throw new AppError(
+      StatusCodes.UNAUTHORIZED,
+      'You can not update this blog',
+    );
+  }
+
+  const result = await Blog.findByIdAndUpdate(id, {
+    isFeatured: !blog.isFeatured,
+  }).populate('author', 'name email profileImage');
+
+  return result;
+};
+
+// toggle blog published status
+const toggleBlogPublished = async (id: string, userId: string) => {
+  const blog = await Blog.findById(id);
+
+  if (!blog) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
+  }
+
+  if (blog.author.toString() !== userId) {
+    throw new AppError(
+      StatusCodes.UNAUTHORIZED,
+      'You can not update this blog',
+    );
+  }
+
+  const result = await Blog.findByIdAndUpdate(id, {
+    isPublished: !blog.isPublished,
+  }).populate('author', 'name email profileImage');
+
+  return result;
+};
+
 const deleteBlog = async (id: string, userId: string) => {
   const blog = await Blog.findById(id);
 
@@ -86,6 +130,8 @@ export const blogServices = {
   createBlog,
   getSingleBlog,
   updateBlog,
+  toggleBlogFeatured,
+  toggleBlogPublished,
   deleteBlog,
   getAllBlogs,
 };

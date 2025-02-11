@@ -26,7 +26,21 @@ const getAllMessages = catchAsync(async (req, res) => {
   });
 });
 
+//delete single message
+const deleteMessage = catchAsync(async (req, res) => {
+  const id = req.params.id;
+
+  await messageServices.deleteMessage(id);
+  // Send response without data
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Message deleted successfully',
+  });
+});
+
 export const messageControllers = {
   sendMessage,
   getAllMessages,
+  deleteMessage,
 };

@@ -13,4 +13,6 @@ router.post(
 
 router.get('/', messageControllers.getAllMessages);
 
+router.delete('/:id', messageControllers.deleteMessage);
+
 export const messageRoutes = router;

@@ -31,6 +31,38 @@ const updateBlog = catchAsync(async (req, res) => {
   });
 });
 
+//toggle blog featured controller for toggling the featured status of a blog
+const toggleBlogFeatured = catchAsync(async (req, res) => {
+  // Get id and userId from request params and user object
+  const id = req.params.id;
+  const userId = req.user?.id as string;
+  // Toggle the featured status of the blog with the provided id and userId
+  const result = await blogServices.toggleBlogFeatured(id, userId);
+  // Send response with the updated blog data
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Blog featured status updated successfully',
+    data: result,
+  });
+});
+
+//toggle blog published status of a blog
+const toggleBlogPublished = catchAsync(async (req, res) => {
+  // Get id and userId from request params and user object
+  const id = req.params.id;
+  const userId = req.user?.id as string;
+  // Toggle the published status of the blog with the provided id and userId
+  const result = await blogServices.toggleBlogPublished(id, userId);
+  // Send response with the updated blog data
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Blog published status updated successfully',
+    data: result,
+  });
+});
+
 const deleteBlog = catchAsync(async (req, res) => {
   // Get id and userId from request params and user object
   const id = req.params.id;
@@ -77,6 +109,8 @@ const getAllBlogs = catchAsync(async (req, res) => {
 export const blogControllers = {
   createBlog,
   updateBlog,
+  toggleBlogFeatured,
+  toggleBlogPublished,
   deleteBlog,
   getSingleBlog,
   getAllBlogs,

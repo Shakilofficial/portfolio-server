@@ -20,7 +20,20 @@ const getAllMessages = async (query: Record<string, unknown>) => {
   return { result, meta };
 };
 
+// only admin can delete single message
+const deleteMessage = async (id: string) => {
+  const message = await Message.findById(id);
+
+  if (!message) {
+    throw new Error('Message not found');
+  }
+
+  const result = await Message.findOneAndDelete({ _id: id });
+  return result;
+};
+
 export const messageServices = {
   sendMessage,
   getAllMessages,
+  deleteMessage,
 };
