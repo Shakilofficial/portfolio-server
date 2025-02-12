@@ -141,8 +141,13 @@ portfolio/
 ## 📞 Contact
 
 📧 **Email**: [mrshakilhossain@outlook.com](mailto:mrshakilhossain@outlook.com)
+
 🔗 **LinkedIn**: [LinkedIn Profile](https://www.linkedin.com/in/your-profile)
+
 🌐 **Portfolio**: [Visit My Portfolio](https://shakilhossain-sigma.vercel.app)
+
 📘 **Facebook**: [Facebook Profile](https://www.facebook.com/iamshakilhossain)
+
+----
 
 💖 _Don't forget to ⭐ this repo if you found it helpful!_
