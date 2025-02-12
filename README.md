@@ -6,14 +6,14 @@
 
 ## 🛠 Features
 
-✅ **Authentication & Authorization** - Secure JWT-based authentication with role-based access control.
-✅ **User Management** - Admin seeding, user roles, and profile image support.
-✅ **Blog Management** - CRUD operations, featured & published toggles, search, and pagination.
-✅ **Project Management** - CRUD operations with category management and soft delete.
-✅ **Message Handling** - Contact form messages with admin access for viewing/deleting.
-✅ **Error Handling** - Centralized error management for consistent API responses.
-✅ **Database Connection** - Mongoose-based MongoDB setup with environment-based configurations.
-✅ **Deployment Ready** - Configured for **Vercel** deployment with `vercel.json`.
+- ✅ **Authentication & Authorization** - Secure JWT-based authentication with role-based access control.
+- ✅ **User Management** - Admin seeding, user roles, and profile image support.
+- ✅ **Blog Management** - CRUD operations, featured & published toggles, search, and pagination.
+- ✅ **Project Management** - CRUD operations with category management and soft delete.
+- ✅ **Message Handling** - Contact form messages with admin access for viewing/deleting.
+- ✅ **Error Handling** - Centralized error management for consistent API responses.
+- ✅ **Database Connection** - Mongoose-based MongoDB setup with environment-based configurations.
+- ✅ **Deployment Ready** - Configured for **Vercel** deployment with `vercel.json`.
 
 ---
 
