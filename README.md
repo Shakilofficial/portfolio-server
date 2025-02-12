@@ -69,7 +69,7 @@ portfolio/
 2️⃣ Navigate to the project directory:
 
 ```sh
- cd portfolio-backend
+ cd backend
 ```
 
 3️⃣ Install dependencies:
