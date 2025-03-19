@@ -2,58 +2,53 @@ import { Server } from 'http';
 import app from './app/app';
 import config from './app/config';
 import { connectDB } from './app/config/db';
-import seedAdmin from './app/config/seedAdmin';
 
 let server: Server | null = null;
 
 // Gracefully shuts down the server and exits the process.
 
-const shutdown = (): void => {
-  console.log('⚠️ Initiating shutdown...');
-
+//* 📌 Gracefully Shutdown Server
+function gracefulShutdown(signal: string) {
+  console.log(`⚠️ Received ${signal}. Closing server...`);
   if (server) {
     server.close(() => {
-      console.log('👋 Server closed successfully.');
-      process.exit(1);
+      console.log('🛑 Server closed gracefully. Exiting process...');
+      process.exit(0);
     });
   } else {
-    process.exit(1);
+    process.exit(0);
   }
-};
+}
 
-// Handles unexpected errors in the application.
-const handleUnexpectedError = (error: unknown, origin: string): void => {
-  console.error(`🚨 ${origin} detected ❌:`, error);
-  shutdown();
-};
-
-// Handle unhandled promise rejections
-process.on('unhandledRejection', (reason) =>
-  handleUnexpectedError(reason, 'Unhandled Rejection'),
-);
-
-// Handle uncaught exceptions
-process.on('uncaughtException', (error) =>
-  handleUnexpectedError(error, 'Uncaught Exception'),
-);
-
-// Starts the server and initializes the database.
-
-const startServer = async (): Promise<void> => {
+//* 🚀 Application Bootstrap
+async function bootstrap() {
   try {
+    console.log('⏳ Connecting to the database...');
     await connectDB();
 
     server = app.listen(config.port, () => {
-      console.log(`🚀 Server is running on port ${config.port} 🏃🏽‍♂️➡️`);
+      console.log(`🚀 Application is running on port ${config.port} 🎯`);
     });
 
-    await seedAdmin();
-    console.log('👑 Admin seeding completed.');
-  } catch (error) {
-    console.error('❌ Failed to start the server:', error);
-    shutdown();
-  }
-};
+    // 🛠️ Handle termination signals
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
-// Start the server
-startServer();
+    // ⚠️ Error Handling for Unexpected Failures
+    process.on('uncaughtException', (error) => {
+      console.error('🚨 Uncaught Exception:', error);
+      gracefulShutdown('uncaughtException');
+    });
+
+    process.on('unhandledRejection', (error) => {
+      console.error('🚨 Unhandled Rejection:', error);
+      gracefulShutdown('unhandledRejection');
+    });
+  } catch (error) {
+    console.error('❌ Error during bootstrap:', error);
+    process.exit(1);
+  }
+}
+
+// 🔥 Start the Application
+bootstrap();
