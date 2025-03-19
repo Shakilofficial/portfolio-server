@@ -1,48 +1,51 @@
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload, TokenExpiredError } from 'jsonwebtoken';
 import config from '../config';
 import AppError from '../helpers/AppError';
-import { TUserRole } from '../modules/user/user.interface';
+import { UserRole } from '../modules/user/user.interface';
 import { User } from '../modules/user/user.model';
 import catchAsync from '../utils/catchAsync';
 
-// Auth middleware for checking user role and permissions
-const auth = (...roles: TUserRole[]) =>
-  catchAsync(async (req, res, next) => {
-    // Get token from request headers and remove Bearer from the token string if present using split
-    const token = req.headers.authorization?.split(' ')[1];
-    // Check if token is present
+const auth = (...requiredRoles: UserRole[]) => {
+  return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.headers.authorization;
+
     if (!token) {
-      throw new AppError(
-        StatusCodes.UNAUTHORIZED,
-        'Authentication token is missing ⚠️',
-      );
-    }
-    // Decode the JWT token and get the decoded payload
-    const decoded = jwt.verify(
-      token,
-      config.jwt_token_secret as string,
-    ) as JwtPayload & { id: string };
-
-    const { id, role, email } = decoded;
-    // Get user from the database using the decoded id
-    const user = await User.findOne({ _id: id, email });
-
-    // if user not found
-    if (!user) {
-      throw new AppError(StatusCodes.UNAUTHORIZED, 'User not found 🔍');
+      throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized!');
     }
 
-    if (roles.length && !roles.includes(role)) {
-      throw new AppError(
-        StatusCodes.UNAUTHORIZED,
-        'Access denied for the current role 🚫',
-      );
-    }
+    try {
+      const decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string,
+      ) as JwtPayload;
 
-    // Set the decoded payload as the user property in the request object
-    req.user = decoded as JwtPayload;
-    // Continue to the next middleware
-    next();
+      const { role, email } = decoded;
+
+      const user = await User.findOne({ email, role, isDeleted: false });
+
+      if (!user) {
+        throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found!');
+      }
+
+      if (requiredRoles && !requiredRoles.includes(role)) {
+        throw new AppError(StatusCodes.UNAUTHORIZED, 'You are not authorized!');
+      }
+
+      req.user = decoded as JwtPayload & { role: string };
+      next();
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        return next(
+          new AppError(
+            StatusCodes.UNAUTHORIZED,
+            'Token has expired! Please login again.',
+          ),
+        );
+      }
+      return next(new AppError(StatusCodes.UNAUTHORIZED, 'Invalid token!'));
+    }
   });
+};
 export default auth;

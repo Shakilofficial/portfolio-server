@@ -1,48 +1,39 @@
 import { model, Schema } from 'mongoose';
-import { IBlog } from './blog.interface';
+import { BlogCategory, IBlog } from './blog.interface';
 
 const blogSchema = new Schema<IBlog>(
   {
-    title: {
+    title: { type: String, required: true, trim: true, unique: true },
+    slug: { type: String, required: true, unique: true },
+    subtitle: { type: String, trim: true },
+    category: {
       type: String,
+      enum: Object.values(BlogCategory),
       required: true,
     },
-    content: {
+    content: { type: String, required: true },
+    thumbnail: {
       type: String,
-      required: true,
+      default:
+        'https://mailrelay.com/wp-content/uploads/2018/03/que-es-un-blog-1.png',
     },
-    coverImage: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    author: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'User',
-    },
-    isPublished: {
-      type: Boolean,
-      default: true,
-    },
-    isFeatured: {
-      type: Boolean,
-      default: true,
-    },
+    isPublished: { type: Boolean, default: true },
+    isFeatured: { type: Boolean, default: false },
+    createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   {
     timestamps: true,
   },
 );
 
-// Exclude __v field before returning user data to client
-blogSchema.pre('find', function () {
-  this.select('-__v');
-});
-
-// Exclude __v field for findOne,
-blogSchema.pre('findOne', function () {
-  this.select('-__v');
+blogSchema.pre<IBlog>('validate', function (next) {
+  if (this.isModified('title') && !this.slug) {
+    this.slug = this.title
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '');
+  }
+  next();
 });
 
 export const Blog = model<IBlog>('Blog', blogSchema);

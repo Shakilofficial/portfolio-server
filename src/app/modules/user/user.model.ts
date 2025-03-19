@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
 import config from '../../config';
-import { IUser } from './user.interface';
+import { IUser, UserRole } from './user.interface';
 
 const userSchema = new Schema<IUser>(
   {
@@ -20,8 +20,11 @@ const userSchema = new Schema<IUser>(
     },
     role: {
       type: String,
-      required: true,
-      default: 'admin',
+      enum: {
+        values: Object.values(UserRole),
+        message: 'Invalid user role',
+      },
+      default: UserRole.ADMIN,
     },
     profileImage: {
       type: String,

@@ -1,6 +1,9 @@
 import { Router } from 'express';
+import { multerUpload } from '../../config/multer.config';
 import auth from '../../middlewares/auth';
+import { parseBody } from '../../middlewares/bodyParser';
 import validateRequest from '../../middlewares/validateRequest';
+import { UserRole } from '../user/user.interface';
 import { blogControllers } from './blog.controller';
 import { blogValidations } from './blog.validation';
 
@@ -8,34 +11,38 @@ const router = Router();
 
 router.post(
   '/',
-  auth('admin'),
+  auth(UserRole.ADMIN),
+  multerUpload.single('thumbnail'),
+  parseBody,
   validateRequest(blogValidations.createBlogValidationSchema),
   blogControllers.createBlog,
 );
 
-router.get('/:id', blogControllers.getSingleBlog);
-
 router.patch(
   '/:id',
-  auth('admin'),
+  auth(UserRole.ADMIN),
+  multerUpload.single('thumbnail'),
+  parseBody,
   validateRequest(blogValidations.updateBlogValidationSchema),
   blogControllers.updateBlog,
 );
 
+router.get('/:slug', blogControllers.getBlogBySlug);
+
 router.patch(
   '/:id/featured',
-  auth('admin'),
+  auth(UserRole.ADMIN),
   blogControllers.toggleBlogFeatured,
 );
 
 router.patch(
   '/:id/published',
-  auth('admin'),
+  auth(UserRole.ADMIN),
   blogControllers.toggleBlogPublished,
 );
 
-router.delete('/:id', auth('admin'), blogControllers.deleteBlog);
-
 router.get('/', blogControllers.getAllBlogs);
+
+router.delete('/:id', auth(UserRole.ADMIN), blogControllers.deleteBlog);
 
 export const blogRoutes = router;

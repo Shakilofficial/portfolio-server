@@ -1,32 +1,46 @@
+import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import config from '../../config';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { authServices } from './auth.service';
 
-const login = catchAsync(async (req, res) => {
-  // Get payload from request body
-  const payload = req.body;
-  // Login the user
-  const result = await authServices.login(payload);
+const loginUser = catchAsync(async (req, res) => {
+  const result = await authServices.loginUser(req.body);
+  const { refreshToken, accessToken } = result;
 
-  // Send response with the token
-  const { token } = result;
-  res.cookie('token', token, {
+  res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: true,
-    maxAge: 365 * 24 * 60 * 60 * 1000,
+    sameSite: 'none',
+    maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
-    message: 'Admin logged in successfully',
-    data: { token },
+    message: 'User logged in successfully!',
+    data: {
+      accessToken,
+      refreshToken,
+    },
+  });
+});
+
+const refreshToken = catchAsync(async (req: Request, res: Response) => {
+  const { authorization } = req.headers;
+
+  const result = await authServices.refreshToken(authorization as string);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User logged in successfully!',
+    data: result,
   });
 });
 
 export const authControllers = {
-  login,
+  loginUser,
+  refreshToken,
 };

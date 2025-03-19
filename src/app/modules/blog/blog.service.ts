@@ -1,135 +1,130 @@
 import { StatusCodes } from 'http-status-codes';
 import QueryBuilder from '../../builder/QueryBuilder';
 import AppError from '../../helpers/AppError';
+import { IImageFile } from '../../interface/IImageFile';
+import { IJwtPayload } from '../auth/auth.interface';
 import { IBlog } from './blog.interface';
 import { Blog } from './blog.model';
 
-const createBlog = async (payload: IBlog) => {
-  const blog = await Blog.create(payload);
-  await blog.populate('author', 'name email profileImage');
-  return blog;
-};
-
-const getSingleBlog = async (id: string) => {
-  const blog = await Blog.findById(id).populate(
-    'author',
-    'name email profileImage',
-  );
-
-  if (!blog) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
+const createBlog = async (
+  payload: Partial<IBlog>,
+  thumbnail: IImageFile,
+  user: IJwtPayload,
+) => {
+  if (thumbnail && thumbnail.path) {
+    payload.thumbnail = thumbnail.path;
   }
-
-  return blog;
+  const blog = new Blog({
+    ...payload,
+    createdBy: user.id,
+  });
+  const result = await blog.save();
+  return result;
 };
 
 const updateBlog = async (
   id: string,
-  userId: string,
   payload: Partial<IBlog>,
+  thumbnail: IImageFile,
+  user: IJwtPayload,
 ) => {
+  if (thumbnail && thumbnail.path) {
+    payload.thumbnail = thumbnail.path;
+  }
   const blog = await Blog.findById(id);
-
   if (!blog) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
   }
-
-  if (blog.author.toString() !== userId) {
+  if (blog.createdBy.toString() !== user.id) {
     throw new AppError(
-      StatusCodes.UNAUTHORIZED,
-      'You can not update this blog',
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this blog',
     );
   }
-
-  const result = await Blog.findByIdAndUpdate(id, payload, {
+  const updatedBlog = await Blog.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
-  }).populate('author', 'name email profileImage');
-
-  return result;
+  })
+    .populate('createdBy', 'name email')
+    .populate('technologies', 'name');
+  return updatedBlog;
 };
 
-// toggle blog featured status
-const toggleBlogFeatured = async (id: string, userId: string) => {
-  const blog = await Blog.findById(id);
+const getBlogBySlug = async (slug: string) => {
+  const blog = await Blog.findOne({ slug })
+    .populate('createdBy', 'name email')
+    .populate('technologies', 'name');
+  return blog;
+};
 
+const toggleBlogFeatured = async (id: string, user: IJwtPayload) => {
+  const blog = await Blog.findById(id);
   if (!blog) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
   }
-
-  if (blog.author.toString() !== userId) {
+  if (blog.createdBy.toString() !== user.id) {
     throw new AppError(
-      StatusCodes.UNAUTHORIZED,
-      'You can not update this blog',
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this blog',
     );
   }
-
-  const result = await Blog.findByIdAndUpdate(id, {
-    isFeatured: !blog.isFeatured,
-  }).populate('author', 'name email profileImage');
-
-  return result;
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    id,
+    { isFeatured: !blog.isFeatured },
+    { new: true },
+  );
+  return updatedBlog;
 };
 
-// toggle blog published status
-const toggleBlogPublished = async (id: string, userId: string) => {
+const toggleBlogPublished = async (id: string, user: IJwtPayload) => {
   const blog = await Blog.findById(id);
-
   if (!blog) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
   }
-
-  if (blog.author.toString() !== userId) {
+  if (blog.createdBy.toString() !== user.id) {
     throw new AppError(
-      StatusCodes.UNAUTHORIZED,
-      'You can not update this blog',
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this blog',
     );
   }
-
-  const result = await Blog.findByIdAndUpdate(id, {
-    isPublished: !blog.isPublished,
-  }).populate('author', 'name email profileImage');
-
-  return result;
-};
-
-const deleteBlog = async (id: string, userId: string) => {
-  const blog = await Blog.findById(id);
-
-  if (!blog) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
-  }
-
-  if (blog.author.toString() !== userId) {
-    throw new AppError(
-      StatusCodes.UNAUTHORIZED,
-      'You can not delete this blog',
-    );
-  }
-
-  return blog.deleteOne();
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    id,
+    { isPublished: !blog.isPublished },
+    { new: true },
+  );
+  return updatedBlog;
 };
 
 const getAllBlogs = async (query: Record<string, unknown>) => {
-  const blogsQuery = new QueryBuilder(
-    Blog.find().populate('author', 'name email profileImage'),
-    query,
-  )
-    .search(['title', 'content'])
+  const blogsQuery = new QueryBuilder(Blog.find(), query)
+    .search(['title', 'subtitle', 'content'])
     .filter()
     .paginate()
     .sort()
     .fields();
-
   const result = await blogsQuery.modelQuery;
   const meta = await blogsQuery.countTotal();
   return { result, meta };
 };
 
+const deleteBlog = async (id: string, user: IJwtPayload) => {
+  const blog = await Blog.findById(id);
+  if (!blog) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Blog not found');
+  }
+  if (blog.createdBy.toString() !== user.id) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to delete this blog',
+    );
+  }
+  return await blog.deleteOne();
+};
+
 export const blogServices = {
   createBlog,
-  getSingleBlog,
   updateBlog,
+  getBlogBySlug,
   toggleBlogFeatured,
   toggleBlogPublished,
   deleteBlog,

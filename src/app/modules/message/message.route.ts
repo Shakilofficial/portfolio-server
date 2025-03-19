@@ -1,5 +1,7 @@
 import { Router } from 'express';
+import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
+import { UserRole } from '../user/user.interface';
 import { messageControllers } from './message.controller';
 import { messageValidations } from './message.validation';
 
@@ -11,8 +13,8 @@ router.post(
   messageControllers.sendMessage,
 );
 
-router.get('/', messageControllers.getAllMessages);
+router.get('/', auth(UserRole.ADMIN), messageControllers.getAllMessages);
 
-router.delete('/:id', messageControllers.deleteMessage);
+router.delete('/:id', auth(UserRole.ADMIN), messageControllers.deleteMessage);
 
 export const messageRoutes = router;

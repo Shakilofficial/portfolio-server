@@ -1,71 +1,77 @@
+import { StatusCodes } from 'http-status-codes';
 import QueryBuilder from '../../builder/QueryBuilder';
+import AppError from '../../helpers/AppError';
+import { IImageFile } from '../../interface/IImageFile';
+import { IJwtPayload } from '../auth/auth.interface';
 import { IProject } from './project.interface';
 import { Project } from './project.model';
 
-const createProject = async (payload: IProject) => {
-  const project = await Project.create(payload);
-  return project;
+const createProject = async (
+  payload: Partial<IProject>,
+  coverImage: IImageFile,
+  user: IJwtPayload,
+) => {
+  if (coverImage && coverImage.path) {
+    payload.coverImage = coverImage.path;
+  }
+
+  const project = new Project({
+    ...payload,
+    createdBy: user.id,
+  });
+  const result = await project.save();
+  return result;
+};
+
+const updateProject = async (
+  id: string,
+  payload: Partial<IProject>,
+  coverImage: IImageFile,
+  user: IJwtPayload,
+) => {
+  if (coverImage && coverImage.path) {
+    payload.coverImage = coverImage.path;
+  }
+
+  const project = await Project.findById(id);
+
+  if (!project) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Project not found');
+  }
+  if (project.createdBy.toString() !== user.id) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this project',
+    );
+  }
+
+  const updatedProject = await Project.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  })
+    .populate('createdBy', 'name email')
+    .populate('technologies', 'name');
+
+  return updatedProject;
 };
 
 const getSingleProject = async (id: string) => {
-  const project = await Project.findById(id);
+  const project = await Project.findById(id)
+    .populate('createdBy', 'name email')
+    .populate('technologies', 'name');
+
   if (!project) {
-    throw new Error('Project not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Project not found');
   }
-  if (project.isDeleted) {
-    throw new Error('Project is deleted');
-  }
+
   return project;
 };
 
-const updateProject = async (id: string, payload: Partial<IProject>) => {
-  const project = await Project.findById(id);
-  if (!project) {
-    throw new Error('Project not found');
-  }
-  if (project.isDeleted) {
-    throw new Error('Project is deleted');
-  }
-
-  return await Project.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  });
-};
-
-// Toggle project featured status
-const toggleProjectFeatured = async (id: string) => {
-  const project = await Project.findById(id);
-  if (!project) {
-    throw new Error('Project not found');
-  }
-  if (project.isDeleted) {
-    throw new Error('Project is deleted');
-  }
-
-  const result = Project.findByIdAndUpdate(id, {
-    isFeatured: !project.isFeatured,
-  });
-  return result;
-};
-
-const deleteProject = async (id: string) => {
-  const project = await Project.findById(id);
-  if (!project) {
-    throw new Error('Project not found');
-  }
-  const result = await Project.findByIdAndUpdate(
-    id,
-    { isDeleted: true },
-    { new: true },
-  );
-  return result;
-};
-
-// Dont Get deleted projects
 const getAllProjects = async (query: Record<string, unknown>) => {
   const projectsQuery = new QueryBuilder(
-    Project.find({ isDeleted: false }),
+    Project.find()
+      .populate('createdBy', 'name email')
+      .populate('technologies', 'name'),
     query,
   )
     .search(['title', 'description'])
@@ -76,7 +82,45 @@ const getAllProjects = async (query: Record<string, unknown>) => {
 
   const result = await projectsQuery.modelQuery;
   const meta = await projectsQuery.countTotal();
+
   return { result, meta };
+};
+
+const toggleProjectFeatured = async (id: string, user: IJwtPayload) => {
+  const project = await Project.findById(id);
+
+  if (!project) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Project not found');
+  }
+  if (project.createdBy.toString() !== user.id) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to update this project',
+    );
+  }
+
+  const result = await Project.findByIdAndUpdate(id, {
+    isFeatured: !project.isFeatured,
+  });
+
+  return result;
+};
+
+const deleteProject = async (id: string, user: IJwtPayload) => {
+  const project = await Project.findById(id);
+
+  if (!project) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Project not found');
+  }
+
+  if (project.createdBy.toString() !== user.id) {
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'You are not allowed to delete this project',
+    );
+  }
+
+  return await project.deleteOne();
 };
 
 export const projectServices = {

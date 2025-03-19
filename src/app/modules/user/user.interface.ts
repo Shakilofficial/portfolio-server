@@ -1,9 +1,12 @@
+/* eslint-disable no-unused-vars */
 export interface IUser {
   email: string;
   password: string;
-  role: string;
+  role: UserRole;
   name: string;
   profileImage?: string;
 }
 
-export type TUserRole = 'admin';
+export enum UserRole {
+  ADMIN = 'admin',
+}
