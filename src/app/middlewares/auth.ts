@@ -23,7 +23,7 @@ const auth = (...requiredRoles: UserRole[]) => {
 
       const { role, email } = decoded;
 
-      const user = await User.findOne({ email, role, isDeleted: false });
+      const user = await User.findOne({ email, role });
 
       if (!user) {
         throw new AppError(StatusCodes.NOT_FOUND, 'This user is not found!');
@@ -48,4 +48,5 @@ const auth = (...requiredRoles: UserRole[]) => {
     }
   });
 };
+
 export default auth;

@@ -16,7 +16,7 @@ const loginUser = async (payload: IAuth) => {
     session.startTransaction();
 
     const user = await User.findOne({ email: payload.email });
-    // Check if user exists
+   
     if (!user) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'Invalid credentials');
     }
@@ -83,7 +83,7 @@ const refreshToken = async (token: string) => {
   }
 
   const jwtPayload: IJwtPayload = {
-    id: id.toString(),
+    id: isUserExist._id.toString(),
     name: isUserExist.name as string,
     email: isUserExist.email as string,
     profileImage: isUserExist.profileImage as string,

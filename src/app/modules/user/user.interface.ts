@@ -4,7 +4,7 @@ export interface IUser {
   password: string;
   role: UserRole;
   name: string;
-  profileImage?: string;
+  profileImage: string;
 }
 
 export enum UserRole {

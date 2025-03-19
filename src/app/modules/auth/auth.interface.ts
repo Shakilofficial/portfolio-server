@@ -6,7 +6,7 @@ export interface IAuth {
 }
 
 export interface IJwtPayload {
-  id: string;
+  userId: string;
   name: string;
   email: string;
   profileImage: string;
