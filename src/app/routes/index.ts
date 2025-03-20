@@ -5,6 +5,7 @@ import { experienceRoutes } from '../modules/experience/experience.route';
 import { messageRoutes } from '../modules/message/message.route';
 import { projectRoutes } from '../modules/project/project.route';
 import { skillRoutes } from '../modules/skill/skill.route';
+import { metaRoutes } from '../modules/meta/meta.route';
 
 const router = Router();
 
@@ -33,6 +34,10 @@ const moduleRoutes = [
     path: '/experiences',
     route: experienceRoutes,
   },
+  {
+    path: '/meta',
+    route: metaRoutes,
+  }
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
