@@ -38,7 +38,7 @@ const updateBlog = catchAsync(async (req: Request, res: Response) => {
 const toggleBlogFeatured = catchAsync(async (req: Request, res: Response) => {
   const result = await blogServices.toggleBlogFeatured(
     req.params.id,
-    req.user as IJwtPayload, // Assuming req.user is the logged-in user's JWT payload
+    req.user as IJwtPayload, 
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -77,7 +77,8 @@ const getAllBlogs = catchAsync(async (req: Request, res: Response) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Blogs retrieved successfully!',
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

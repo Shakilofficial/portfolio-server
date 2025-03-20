@@ -36,6 +36,7 @@ const deleteMessage = catchAsync(async (req, res) => {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Message deleted successfully',
+    data: null,
   });
 });
 

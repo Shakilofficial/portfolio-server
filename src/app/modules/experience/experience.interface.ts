@@ -10,4 +10,6 @@ export interface IExperience {
   endDate?: Date;
   description?: string;
   createdBy: Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

@@ -7,7 +7,8 @@ const projectSchema = new Schema<IProject>(
     title: { type: String, required: true, trim: true },
     subtitle: { type: String, required: true, trim: true },
     description: { type: String, required: true, trim: true },
-    coverImage: { type: String, required: true },
+    coverImage: { type: String, default:
+      'https://mailrelay.com/wp-content/uploads/2018/03/que-es-un-blog-1.png'},
     category: { type: String, enum: projectCategories, required: true },
     githubUrl: { type: String, default: null },
     liveUrl: { type: String, default: null },

@@ -50,7 +50,7 @@ const updateProject = async (
     runValidators: true,
   })
     .populate('createdBy', 'name email')
-    .populate('technologies', 'name');
+    .populate('technologies', 'name icon');
 
   return updatedProject;
 };
@@ -58,7 +58,7 @@ const updateProject = async (
 const getSingleProject = async (id: string) => {
   const project = await Project.findById(id)
     .populate('createdBy', 'name email')
-    .populate('technologies', 'name');
+    .populate('technologies', 'name icon');
 
   if (!project) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Project not found');
@@ -71,7 +71,7 @@ const getAllProjects = async (query: Record<string, unknown>) => {
   const projectsQuery = new QueryBuilder(
     Project.find()
       .populate('createdBy', 'name email')
-      .populate('technologies', 'name'),
+      .populate('technologies', 'name icon'),
     query,
   )
     .search(['title', 'description'])

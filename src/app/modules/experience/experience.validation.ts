@@ -6,8 +6,8 @@ const createExperienceValidationSchema = z.object({
     company: z.string().min(3).max(50).trim(),
     position: z.string().min(3).max(50).trim(),
     location: z.string().min(3).max(50).trim(),
-    startDate: z.date().min(new Date()),
-    endDate: z.date().min(new Date()).optional(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
     description: z.string().min(3).max(50).trim().optional(),
   }),
 });
@@ -18,8 +18,8 @@ const updateExperienceValidationSchema = z.object({
     company: z.string().min(3).max(50).trim().optional(),
     position: z.string().min(3).max(50).trim().optional(),
     location: z.string().min(3).max(50).trim().optional(),
-    startDate: z.date().min(new Date()).optional(),
-    endDate: z.date().min(new Date()).optional(),
+    startDate: z.coerce.date().optional(),
+    endDate: z.coerce.date().optional(),
     description: z.string().min(3).max(50).trim().optional(),
   }),
 });
