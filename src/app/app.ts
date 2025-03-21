@@ -9,7 +9,7 @@ import router from './routes';
 
 const app: Application = express();
 const allowedOrigins = [
-  'http://localhost:3000',
+  'https://shakil-tawny.vercel.app',
   'https://shakil-portfolio-dashboard.vercel.app',
 ];
 
