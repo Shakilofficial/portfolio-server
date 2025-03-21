@@ -9,6 +9,8 @@ import { projectValidations } from './project.validation';
 
 const router = Router();
 
+router.get('/', projectControllers.getAllProjects);
+
 router.post(
   '/',
   auth(UserRole.ADMIN),
@@ -28,8 +30,6 @@ router.patch(
 );
 
 router.get('/:id', projectControllers.getSingleProject);
-
-router.get('/', projectControllers.getAllProjects);
 
 router.patch(
   '/:id/featured',

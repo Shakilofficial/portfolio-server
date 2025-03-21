@@ -6,6 +6,18 @@ import sendResponse from '../../utils/sendResponse';
 import { IJwtPayload } from '../auth/auth.interface';
 import { projectServices } from './project.service';
 
+
+const getAllProjects = catchAsync(async (req: Request, res: Response) => {
+  const result = await projectServices.getAllProjects(req.query);
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Projects retrieved successfully!',
+    meta: result.meta,
+    data: result.result,
+  });
+});
+
 const createProject = catchAsync(async (req: Request, res: Response) => {
   const result = await projectServices.createProject(
     req.body,
@@ -60,16 +72,6 @@ const getSingleProject = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const getAllProjects = catchAsync(async (req: Request, res: Response) => {
-  const result = await projectServices.getAllProjects(req.query);
-  sendResponse(res, {
-    statusCode: StatusCodes.OK,
-    success: true,
-    message: 'Projects retrieved successfully!',
-    meta: result.meta,
-    data: result.result,
-  });
-});
 
 const deleteProject = catchAsync(async (req: Request, res: Response) => {
   const result = await projectServices.deleteProject(

@@ -6,7 +6,6 @@ const createProjectValidationSchema = z.object({
     title: z.string({ required_error: 'Title is required' }),
     subtitle: z.string({ required_error: 'Subtitle is required' }),
     description: z.string({ required_error: 'Description is required' }),
-    coverImage: z.string().url().trim().optional(),
     category: z.enum([...projectCategories] as [string, ...string[]]),
     githubUrl: z.string().url().optional(),
     liveUrl: z.string().url().optional(),
@@ -21,7 +20,6 @@ const updateProjectValidationSchema = z.object({
     description: z
       .string({ required_error: 'Description is required' })
       .optional(),
-    coverImage: z.string().url().trim().optional(),
     category: z
       .enum([...projectCategories] as [string, ...string[]])
       .optional(),

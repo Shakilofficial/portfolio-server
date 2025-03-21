@@ -8,7 +8,7 @@ const createExperienceValidationSchema = z.object({
     location: z.string().min(3).max(50).trim(),
     startDate: z.coerce.date(),
     endDate: z.coerce.date().optional(),
-    description: z.string().min(3).max(50).trim().optional(),
+    description: z.string().min(3).max(1000).trim().optional(),
   }),
 });
 
@@ -20,7 +20,7 @@ const updateExperienceValidationSchema = z.object({
     location: z.string().min(3).max(50).trim().optional(),
     startDate: z.coerce.date().optional(),
     endDate: z.coerce.date().optional(),
-    description: z.string().min(3).max(50).trim().optional(),
+    description: z.string().min(3).max(1000).trim().optional(),
   }),
 });
 

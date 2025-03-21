@@ -6,6 +6,31 @@ import { IJwtPayload } from '../auth/auth.interface';
 import { IProject } from './project.interface';
 import { Project } from './project.model';
 
+
+const getAllProjects = async (query: Record<string, unknown>) => {
+  const projectsQuery = new QueryBuilder(
+    Project.find()
+      .populate('createdBy', 'name email')
+      .populate({
+        path: 'technologies', 
+        model: 'Skill', 
+        select: 'name icon',
+      }),
+    query,
+  )
+    .search(['title', 'description'])
+    .filter()
+    .paginate()
+    .sort()
+    .fields();
+
+  const result = await projectsQuery.modelQuery;
+  const meta = await projectsQuery.countTotal();
+
+  return { result, meta };
+};
+
+
 const createProject = async (
   payload: Partial<IProject>,
   coverImage: IImageFile,
@@ -49,8 +74,6 @@ const updateProject = async (
     new: true,
     runValidators: true,
   })
-    .populate('createdBy', 'name email')
-    .populate('technologies', 'name icon');
 
   return updatedProject;
 };
@@ -67,24 +90,7 @@ const getSingleProject = async (id: string) => {
   return project;
 };
 
-const getAllProjects = async (query: Record<string, unknown>) => {
-  const projectsQuery = new QueryBuilder(
-    Project.find()
-      .populate('createdBy', 'name email')
-      .populate('technologies', 'name icon'),
-    query,
-  )
-    .search(['title', 'description'])
-    .filter()
-    .paginate()
-    .sort()
-    .fields();
 
-  const result = await projectsQuery.modelQuery;
-  const meta = await projectsQuery.countTotal();
-
-  return { result, meta };
-};
 
 const toggleProjectFeatured = async (id: string, user: IJwtPayload) => {
   const project = await Project.findById(id);
