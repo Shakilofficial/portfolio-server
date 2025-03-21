@@ -6,10 +6,6 @@ import auth from '../../middlewares/auth';
 
 const router = Router();
 
-router.get(
-  '/',
-  auth(UserRole.ADMIN),
-  metaControllers.getMetaData,
-);
+router.get('/', auth(UserRole.ADMIN), metaControllers.getMetaData);
 
 export const metaRoutes = router;

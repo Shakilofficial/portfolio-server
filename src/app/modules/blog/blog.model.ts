@@ -10,7 +10,7 @@ const blogSchema = new Schema<IBlog>(
       type: String,
       enum: Object.values(BlogCategory),
       required: true,
-    }, 
+    },
     content: { type: String, required: true },
     thumbnail: {
       type: String,

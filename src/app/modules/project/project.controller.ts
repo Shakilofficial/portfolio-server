@@ -6,7 +6,6 @@ import sendResponse from '../../utils/sendResponse';
 import { IJwtPayload } from '../auth/auth.interface';
 import { projectServices } from './project.service';
 
-
 const getAllProjects = catchAsync(async (req: Request, res: Response) => {
   const result = await projectServices.getAllProjects(req.query);
   sendResponse(res, {
@@ -71,7 +70,6 @@ const getSingleProject = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
 
 const deleteProject = catchAsync(async (req: Request, res: Response) => {
   const result = await projectServices.deleteProject(

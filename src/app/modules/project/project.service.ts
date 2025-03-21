@@ -6,16 +6,13 @@ import { IJwtPayload } from '../auth/auth.interface';
 import { IProject } from './project.interface';
 import { Project } from './project.model';
 
-
 const getAllProjects = async (query: Record<string, unknown>) => {
   const projectsQuery = new QueryBuilder(
-    Project.find()
-      .populate('createdBy', 'name email')
-      .populate({
-        path: 'technologies', 
-        model: 'Skill', 
-        select: 'name icon',
-      }),
+    Project.find().populate('createdBy', 'name email').populate({
+      path: 'technologies',
+      model: 'Skill',
+      select: 'name icon',
+    }),
     query,
   )
     .search(['title', 'description'])
@@ -29,7 +26,6 @@ const getAllProjects = async (query: Record<string, unknown>) => {
 
   return { result, meta };
 };
-
 
 const createProject = async (
   payload: Partial<IProject>,
@@ -73,7 +69,7 @@ const updateProject = async (
   const updatedProject = await Project.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
-  })
+  });
 
   return updatedProject;
 };
@@ -89,8 +85,6 @@ const getSingleProject = async (id: string) => {
 
   return project;
 };
-
-
 
 const toggleProjectFeatured = async (id: string, user: IJwtPayload) => {
   const project = await Project.findById(id);

@@ -44,16 +44,17 @@ const updateBlog = async (
   const updatedBlog = await Blog.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
-  })
-    .populate('createdBy', 'name email')
-  
+  }).populate('createdBy', 'name email');
+
   return updatedBlog;
 };
 
 const getBlogBySlug = async (slug: string) => {
-  const blog = await Blog.findOne({ slug })
-    .populate('createdBy', 'name profileImage')
-   
+  const blog = await Blog.findOne({ slug }).populate(
+    'createdBy',
+    'name profileImage',
+  );
+
   return blog;
 };
 
@@ -96,7 +97,10 @@ const toggleBlogPublished = async (id: string, user: IJwtPayload) => {
 };
 
 const getAllBlogs = async (query: Record<string, unknown>) => {
-  const blogsQuery = new QueryBuilder(Blog.find().populate('createdBy', 'name profileImage'), query)
+  const blogsQuery = new QueryBuilder(
+    Blog.find().populate('createdBy', 'name profileImage'),
+    query,
+  )
     .search(['title', 'subtitle', 'content'])
     .filter()
     .paginate()

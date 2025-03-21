@@ -5,8 +5,11 @@ import { Message } from '../message/message.model';
 import { Project } from '../project/project.model';
 import { Skill } from '../skill/skill.model';
 
-const getMetaData = async (query: Record<string, unknown>,user:JwtPayload) => {
-    const { startDate, endDate } = query;
+const getMetaData = async (
+  query: Record<string, unknown>,
+  user: JwtPayload,
+) => {
+  const { startDate, endDate } = query;
   // Check if the user is an admin
   const isAdmin = user?.role === 'admin';
   // Get total counts for all main entities

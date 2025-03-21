@@ -23,4 +23,3 @@ export const blogValidations = {
   createBlogValidationSchema,
   updateBlogValidationSchema,
 };
-

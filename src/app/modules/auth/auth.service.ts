@@ -16,7 +16,7 @@ const loginUser = async (payload: IAuth) => {
     session.startTransaction();
 
     const user = await User.findOne({ email: payload.email });
-   
+
     if (!user) {
       throw new AppError(StatusCodes.UNAUTHORIZED, 'Invalid credentials');
     }

@@ -38,7 +38,7 @@ const updateBlog = catchAsync(async (req: Request, res: Response) => {
 const toggleBlogFeatured = catchAsync(async (req: Request, res: Response) => {
   const result = await blogServices.toggleBlogFeatured(
     req.params.id,
-    req.user as IJwtPayload, 
+    req.user as IJwtPayload,
   );
   sendResponse(res, {
     statusCode: StatusCodes.OK,
