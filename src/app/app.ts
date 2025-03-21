@@ -3,15 +3,28 @@ import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import os from 'os';
-
 import globalErrorHandler from './middlewares/globalErrorHandler';
 import notFound from './middlewares/notFound';
 import router from './routes';
 
 const app: Application = express();
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://shakil-portfolio-dashboard.vercel.app',
+];
 
-// Middlewares
-app.use(cors({ origin: 'http://localhost:5000', credentials: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 
