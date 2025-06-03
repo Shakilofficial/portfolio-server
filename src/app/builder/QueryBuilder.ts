@@ -66,15 +66,18 @@ class QueryBuilder<T> {
 
   // Sorts the query based on sortBy and sortOrder
   sort() {
-    // Get sortBy and sortOrder from query object
     const sortBy = this.query?.sortBy as string | undefined;
     const sortOrder = this.query?.sortOrder as string | undefined;
-    // Check if sortBy and sortOrder are present
+  
+    // If custom sort is provided
     if (sortBy) {
-      // Concatenate sortBy and sortOrder
       const sortStr = `${sortOrder === 'desc' ? '-' : ''}${sortBy}`;
       this.modelQuery = this.modelQuery.sort(sortStr);
+    } else {
+      // Default sort: descending by _id (most recent first)
+      this.modelQuery = this.modelQuery.sort('-_id');
     }
+  
     return this;
   }
 
